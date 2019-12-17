@@ -1,0 +1,12 @@
+#Automake
+/*.m4
+*.cache
+config/
+config.*
+configure
+Makefile
+*.in
+stamp*
+.deps
+/*.pc
+/*.sh

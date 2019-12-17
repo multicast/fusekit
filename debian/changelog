@@ -1,3 +1,9 @@
+libfusekit (0.6.6) unstable; urgency=low
+
+  * Fix package generation
+
+ -- Pierrick Caillon <pierrick.caillon+fusekit@megami.fr>  Sun, 15 Dec 2019 21:33:26 +0100
+
 libfusekit (0.6.0-1) unstable; urgency=low
 
   * Initial release 
