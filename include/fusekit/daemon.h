@@ -93,7 +93,7 @@ namespace fusekit{
       _ops.rmdir = daemon::rmdir;
       _ops.flush = daemon::flush;
       _ops.utime = daemon::utime;
-#if FUSE_USEERSION > 26
+#if FUSE_USE_VERSION > 26
       _ops.access  = daemon::_access;
 #endif
     }

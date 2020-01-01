@@ -10,3 +10,11 @@ stamp*
 .deps
 /*.pc
 /*.sh
+autoreconf.*
+#Temporary files
+.debhelper
+libfusekit-dev*
+debhelper*
+files
+#VScode
+settings.json
