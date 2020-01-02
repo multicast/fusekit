@@ -18,3 +18,6 @@ debhelper*
 files
 #VScode
 settings.json
+#Examples
+*fs
+*.o

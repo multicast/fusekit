@@ -9,7 +9,7 @@
 
 #include <unistd.h>
 #include <sys/types.h>
-#include <fuse.h>
+#include <fuse/fuse.h>
 #include <vector>
 #include <sstream>
 
@@ -76,11 +76,22 @@ namespace fusekit{
 #endif
     }
 
+  protected:
+    /**
+     * \brief Add handlers for global operations.
+     * \remark Run before setting internal handlers.
+     */
+    virtual void extendOperations(fuse_operations &ops) {}
+
   private:
 
     daemon(){
+      extendOperations(_ops);
       _ops.getattr = daemon::getattr;
+      _ops.readlink = daemon::readlink;
+      _ops.opendir = daemon::opendir;
       _ops.readdir = daemon::readdir;
+      _ops.releasedir = daemon::releasedir;
       _ops.read = daemon::read;
       _ops.write = daemon::write;
       _ops.truncate = daemon::truncate;
@@ -91,10 +102,19 @@ namespace fusekit{
       _ops.unlink = daemon::unlink;
       _ops.mkdir = daemon::mkdir;
       _ops.rmdir = daemon::rmdir;
+      _ops.symlink = daemon::symlink;
       _ops.flush = daemon::flush;
+      _ops.setxattr = daemon::setxattr;
+      _ops.getxattr = daemon::getxattr;
+      _ops.listxattr = daemon::listxattr;
+      _ops.removexattr = daemon::removexattr;
+#if FUSE_USE_VERSION > 24
+      _ops.access  = daemon::access;
+#endif
+#if FUSE_USE_VERSION > 25
+      _ops.utimens = daemon::utimens;
+#else
       _ops.utime = daemon::utime;
-#if FUSE_USE_VERSION > 26
-      _ops.access  = daemon::_access;
 #endif
     }
 
@@ -106,7 +126,7 @@ namespace fusekit{
       return instance().find_entry(parent).unlink(to_delete.c_str());
     }
 
-    static int mknod( const char* p, mode_t m, dev_t t){
+    static int mknod( const char* p, mode_t m, dev_t t ){
       lock guard(instance());
       path parent(p);
       const std::string to_create = parent.back();
@@ -114,7 +134,7 @@ namespace fusekit{
       return instance().find_entry(parent).mknod(to_create.c_str(), m, t);
     }
 
-    static int mkdir( const char* p, mode_t m){
+    static int mkdir( const char* p, mode_t m ){
       lock guard(instance());
       path parent(p);
       const std::string to_create = parent.back();
@@ -122,7 +142,7 @@ namespace fusekit{
       return instance().find_entry(parent).mkdir(to_create.c_str(), m);
     }
 
-    static int rmdir( const char* p){
+    static int rmdir( const char* p ){
       lock guard(instance());
       path parent(p);
       const std::string to_create = parent.back();
@@ -176,19 +196,70 @@ namespace fusekit{
       return instance().find_entry(path).read(buf,size,offset,*fi);
     }
 
-    static int write( const char* path, const char* src, size_t size, off_t offset, struct fuse_file_info* fi){
+    static int write( const char* path, const char* src, size_t size, off_t offset, struct fuse_file_info* fi ){
       lock guard(instance());
       return instance().find_entry(path).write(src,size,offset,*fi);
     }
 
-    static int readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){
+    static int opendir( const char *path, struct fuse_file_info *fi ){
+      lock guard(instance());
+      return instance().find_entry(path).opendir(*fi);
+    }
+
+    static int readdir( const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi ){
       lock guard(instance());
       return instance().find_entry(path).readdir(buf,filler,offset,*fi);
     }
 
-    static int utime(const char *path, utimbuf* buf ){
+    static int releasedir( const char *path, struct fuse_file_info *fi ){
       lock guard(instance());
-      return instance().find_entry(path).utime(*buf);
+      return instance().find_entry(path).releasedir(*fi);
+    }
+
+    static int utime( const char *path, utimbuf* buf ){
+      lock guard(instance());
+      struct timespec tv[2] = { 0 };
+      tv[0].tv_sec = buf->actime;
+      tv[1].tv_sec = buf->modtime;
+      return instance().find_entry(path).utimens(tv);
+    }
+
+    static int utimens( const char *path, const struct timespec tv[2] ){
+      lock guard(instance());
+      return instance().find_entry(path).utimens(tv);
+    }
+
+    static int readlink( const char *path, char *buffer, size_t size ){
+      lock guard(instance());
+      return instance().find_entry(path).readlink(buffer, size);
+    }
+
+    static int symlink( const char *path, const char* target ){
+      lock guard(instance());
+      struct path pa = path;
+      const std::string name = pa.back();
+      pa.pop_back();
+      return instance().find_entry(pa).symlink(name.c_str(), target);
+    }
+
+    static int setxattr( const char *path, const char *name, const char *value, size_t size, int flags ){
+      lock guard(instance());
+      return instance().find_entry(path).setxattr(name, value, size, flags);
+    }
+
+    static int getxattr( const char *path, const char *name, char *value, size_t size ){
+      lock guard(instance());
+      return instance().find_entry(path).getxattr(name, value, size);
+    }
+
+    static int listxattr( const char *path, char *list, size_t size ){
+      lock guard(instance());
+      return instance().find_entry(path).listxattr(list, size);
+    }
+
+    static int removexattr( const char *path, const char *name ){
+      lock guard(instance());
+      return instance().find_entry(path).removexattr(name);
     }
 
     fusekit::entry& find_entry( const path& pa ){

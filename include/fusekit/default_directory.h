@@ -6,13 +6,15 @@
 #include <fusekit/directory_node.h>
 #include <fusekit/directory_factory.h>
 #include <fusekit/file_factory.h>
+#include <fusekit/symlink_factory.h>
 
 
 namespace fusekit{
 
   template<
     class DirectoryFactory = directory_factory<>,
-    class FileFactory = file_factory<>
+    class FileFactory = file_factory<>,
+    class SymlinkFactory = symlink_factory<>
     >
   struct default_directory {
     template<
@@ -22,6 +24,7 @@ namespace fusekit{
       public directory_node< 
       DirectoryFactory,
       FileFactory,
+      SymlinkFactory,
       Derived
       >{
     };

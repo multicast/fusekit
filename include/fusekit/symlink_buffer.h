@@ -1,6 +1,6 @@
 
-#ifndef __FUSEKIT__NO_BUFFER_H
-#define __FUSEKIT__NO_BUFFER_H
+#ifndef __FUSEKIT__SYMLINK_BUFFER_H
+#define __FUSEKIT__SYMLINK_BUFFER_H
 
 #include <fusekit/entry.h>
 
@@ -9,7 +9,7 @@ namespace fusekit{
   template< 
     class Derived 
     >
-  struct no_buffer {
+  struct symlink_buffer {
 
     int open( fuse_file_info& ){
       return -EISDIR;
@@ -20,10 +20,10 @@ namespace fusekit{
     }
 
     int size(){
-      return 0;
+      return _target.size();
     }
 
-    int read( char*, size_t, off_t, fuse_file_info& ){      
+    int read( char*, size_t, off_t, fuse_file_info& ){
       return -EISDIR;
     }
 
@@ -39,9 +39,17 @@ namespace fusekit{
       return -EISDIR;
     }
 
-    int readlink( char*, size_t ){
-      return -EINVAL;
+    int readlink( char *buf, size_t bufsize ){
+      strncpy(buf, _target.c_str(), bufsize);
+      return 0;
     }
+
+    void initlink( const char* target ){
+      *((std::string*)&_target) = target;
+    }
+
+  private:
+    const std::string _target;
   };
 
 }

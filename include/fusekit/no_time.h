@@ -10,15 +10,15 @@ namespace fusekit{
     class Derived
     >
   struct no_time {
-    time_t modification_time() {
+    timespec modification_time() {
       return 0;
     }
 
-    time_t change_time() {
+    timespec change_time() {
       return 0;
     }
 
-    time_t access_time() {
+    timespec access_time() {
       return 0;
     }
 

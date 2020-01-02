@@ -13,6 +13,13 @@ namespace fusekit{
     }
   };
 
+  template< class T, class T1 >
+  struct new_creator{
+    T* operator()(T1 a1){
+      return new T(a1);
+    }
+  };
+
 }
 
 #endif

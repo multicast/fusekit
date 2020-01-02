@@ -35,8 +35,14 @@ namespace fusekit{
     virtual int write( const char*, size_t, off_t, fuse_file_info& ){
       return -ENOENT;
     }
+    virtual int opendir( fuse_file_info& ){
+      return -ENOENT;
+    }
     virtual int readdir( void*, fuse_fill_dir_t, off_t, fuse_file_info& ){
       return -ENOENT;
+    }
+    virtual int releasedir( fuse_file_info& ){
+      return 0;
     }
     virtual int mknod( const char*, mode_t, dev_t ){
       return -ENOENT;
@@ -56,7 +62,25 @@ namespace fusekit{
     virtual int truncate( off_t ){ 
       return 0; 
     }
-    virtual int utime( utimbuf& ){
+    virtual int utimens( const timespec[2] ){
+      return -ENOENT;
+    }
+    virtual int readlink( char*, size_t ){
+      return -ENOENT;
+    }
+    virtual int symlink( const char*, const char* ){
+      return -EPERM;
+    }
+    virtual int setxattr( const char *, const char *, size_t, int ){
+      return -ENOENT;
+    }
+    virtual int getxattr( const char *, char *, size_t ){
+      return -ENOENT;
+    }
+    virtual int listxattr( char *, size_t ){
+      return -ENOENT;
+    }
+    virtual int removexattr( const char * ){
       return -ENOENT;
     }
   };

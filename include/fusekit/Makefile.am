@@ -2,12 +2,14 @@ library_includedir = $(includedir)/fusekit
 library_include_HEADERS = basic_directory.h \
     basic_entry.h \
     basic_file.h \
+    basic_symlink.h \
     daemon.h \
     default_directory.h \
     default_permissions.h \
     default_time.h \
-    directory_node.h \
+    default_xattr.h \
     directory_factory.h \
+    directory_node.h \
     entry.h \
     file_factory.h \
     file_handle.h \
@@ -15,19 +17,24 @@ library_include_HEADERS = basic_directory.h \
     generic_buffer.h \
     new_creator.h \
     no_buffer.h \
-    no_creator.h\
+    no_creator.h \
     no_entry.h \
     no_lock.h \
     no_stream_reader.h \
     no_stream_writer.h \
     no_time.h \
+    no_xattr.h \
     path.h \
     stream_callback_file.h \
     stream_function_file.h \
     stream_object_file.h \
     stream_reader.h \
     stream_writer.h \
-    tracer_buffer.h \
+    symlink_buffer.h \
+    symlink_factory.h \
+    symlink_node.h \
     time_fields.h \
+    tracer_buffer.h \
+    tracer_time.h \
     type_reader.h \
     type_writer.h

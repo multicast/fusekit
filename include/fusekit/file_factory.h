@@ -11,13 +11,10 @@
 
 namespace fusekit{
 
-  struct no_file_creator{
-    entry* operator()(){
-      return 0;
-    }
+  struct no_file_creator : public no_creator{
   };
 
-  template< class Creator = no_creator, class LockingPolicy = no_lock >
+  template< class Creator = no_file_creator, class LockingPolicy = no_lock >
   struct file_factory : public LockingPolicy{
     typedef std::tr1::unordered_map< std::string, entry* > map_t;
     typedef typename file_factory< Creator, LockingPolicy >::lock lock;

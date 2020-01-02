@@ -14,22 +14,31 @@ namespace fusekit{
   template<
     class DirectoryFactory,
     class FileFactory,
+    class SymlinkFactory,
     class Derived 
     > 
   struct directory_node 
     : public DirectoryFactory
-    , public FileFactory {
+    , public FileFactory
+    , public SymlinkFactory {
     
     entry* find( const char* name ) {
       entry* e = directory_factory().find(name);
       if( !e ) {
-	e = file_factory().find(name);
+        e = file_factory().find(name);
+      }
+      if( !e ) {
+        e = symlink_factory().find(name);
       }
       return e;
     }
 
     int links() {
-      return file_factory().size() + directory_factory().size() + 2;
+      return file_factory().size() + symlink_factory().size() + directory_factory().size() + 2;
+    }
+
+    int opendir( fuse_file_info& ){
+      return 0;
     }
 
     int readdir( void* buf, fuse_fill_dir_t filler, off_t offset, fuse_file_info& ){
@@ -39,22 +48,32 @@ namespace fusekit{
       name_container_t names( file_factory().names() );
       name_container_t::const_iterator i = names.begin();
       while( i != names.end() ) {
-	filler( buf, *i, NULL, offset );
-	++i;
+        filler( buf, *i, NULL, offset );
+        ++i;
+      }
+      names = symlink_factory().names();
+      i = names.begin();
+      while( i != names.end() ) {
+        filler( buf, *i, NULL, offset );
+        ++i;
       }
       names = directory_factory().names();
       i = names.begin();
       while( i != names.end() ) {
-	filler( buf, *i, NULL, offset );
-	++i;
+        filler( buf, *i, NULL, offset );
+        ++i;
       }
+      return 0;
+    }
+
+    int releasedir( fuse_file_info& ){
       return 0;
     }
 
     int mknod( const char* name, mode_t mode, dev_t type){
       const int err = file_factory().create(name,mode,type);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -62,7 +81,7 @@ namespace fusekit{
     int unlink( const char* name ){
       const int err = file_factory().destroy(name);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -70,7 +89,7 @@ namespace fusekit{
     int mkdir( const char* name, mode_t mode ){
       const int err = directory_factory().create(name,mode);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -78,7 +97,18 @@ namespace fusekit{
     int rmdir( const char* name ){
       const int err = directory_factory().destroy(name);
       if( err == 0 ){
-	update_change_and_modification_time();
+        update_change_and_modification_time();
+      }
+      return err;
+    }
+
+    int symlink( const char* name, const char* target ){
+      if( find(name) != NULL ){
+        return -EEXIST;
+      }
+      const int err = symlink_factory().create(name,target);
+      if( err == 0 ){
+        update_change_and_modification_time();
       }
       return err;
     }
@@ -97,6 +127,11 @@ namespace fusekit{
     inline
     FileFactory& file_factory() {
       return static_cast< FileFactory& >(*this);
+    }
+
+    inline
+    SymlinkFactory& symlink_factory() {
+      return static_cast< SymlinkFactory& >(*this);
     }
   };
 
