@@ -3,6 +3,7 @@
 #define __FUSEKIT__SYMLINK_BUFFER_H
 
 #include <fusekit/entry.h>
+#include <string.h>
 
 namespace fusekit{
 
