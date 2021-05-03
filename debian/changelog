@@ -1,3 +1,9 @@
+libfusekit (0.7.1) unstable; urgency=low
+
+  * Symlink bugfix
+
+ -- Pierrick Caillon <pierrick.caillon+fusekit@megami.fr>  Mon, 03 May 2021 11:47:16 +0200
+
 libfusekit (0.7.0) unstable; urgency=low
 
   * Symlink support
