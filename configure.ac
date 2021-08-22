@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file preferable with autoreconf -i to produce a configure script.
 
-AC_INIT([fusekit],[0.7.0])
+AC_INIT([fusekit],[0.7.1])
 AC_PREREQ([2.69])
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE([foreign])

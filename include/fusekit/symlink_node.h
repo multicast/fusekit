@@ -2,7 +2,6 @@
 #ifndef __FUSEKIT__SYMLINK_NODE_H
 #define __FUSEKIT__SYMLINK_NODE_H
 
-#include <string.h>
 #include <fusekit/entry.h>
 
 namespace fusekit{
