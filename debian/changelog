@@ -1,3 +1,22 @@
+libfusekit (0.7.1) unstable; urgency=low
+
+  * Symlink bugfix
+
+ -- Pierrick Caillon <pierrick.caillon+fusekit@megami.fr>  Mon, 03 May 2021 11:47:16 +0200
+
+libfusekit (0.7.0) unstable; urgency=low
+
+  * Symlink support
+  * Extended attributes support
+
+ -- Pierrick Caillon <pierrick.caillon+fusekit@megami.fr>  Thu, 02 Jan 2020 18:31:24 +0100
+
+libfusekit (0.6.6) unstable; urgency=low
+
+  * Fix package generation
+
+ -- Pierrick Caillon <pierrick.caillon+fusekit@megami.fr>  Sun, 15 Dec 2019 21:33:26 +0100
+
 libfusekit (0.6.0-1) unstable; urgency=low
 
   * Initial release 

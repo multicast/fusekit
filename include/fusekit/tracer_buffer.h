@@ -57,6 +57,11 @@ namespace fusekit{
       _os << "tracer_buffer::truncate(...)" << std::endl;
       return offset;
     }    
+
+    int readlink( char*, size_t ){
+      _os << "tracer_buffer::readlink(...)" << std::endl;
+      return -EINVAL;
+    }
   private:
     std::ostream&_os;
   };

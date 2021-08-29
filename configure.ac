@@ -1,27 +1,16 @@
 #                                               -*- Autoconf -*-
 # Process this file preferable with autoreconf -i to produce a configure script.
 
-
-
-define(AC_FUX_NAME, fusekit)
-define(AC_FUX_MAJOR_VERSION, 0)
-define(AC_FUX_MINOR_VERSION, 6)
-define(AC_FUX_MICRO_VERSION, 5)
-define(AC_FUX_VERSION, AC_FUX_MAJOR_VERSION.AC_FUX_MINOR_VERSION.AC_FUX_MICRO_VERSION)
-
-AC_INIT(AC_FUX_NAME,AC_FUX_VERSION)
-AC_PREREQ(2.61)
+AC_INIT([fusekit],[0.7.1])
+AC_PREREQ([2.69])
 AC_CONFIG_AUX_DIR(config)
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_MACRO_DIR([m4])
-
 
 AC_MSG_CHECKING([whether to build debug variant])
 AC_ARG_ENABLE(debug,
-	AC_HELP_STRING(
-		[--enable-debug],
-		[set debug compile flags [default=no]]
-		),
+	AS_HELP_STRING([--enable-debug],[set debug compile flags [default=no]
+		]),
 	[],
 	[enable_debug="no"]
 )
@@ -40,22 +29,20 @@ CPPFLAGS="$CPPFLAGS $FUSE_CFLAGS"
 
 AC_MSG_CHECKING([which fuse interface version to use])
 AC_ARG_WITH(fuse-version,
-	AC_HELP_STRING(
-		[--with-fuse-version],
-		[specify the fuse interface version [default=27]]
-		),
+	AS_HELP_STRING([--with-fuse-version],[specify the fuse interface version [default=27]
+		]),
 	[],
 	[with_fuse_version="27"]
 )
 AC_MSG_RESULT([$with_fuse_version])
 CPPFLAGS="$CPPFLAGS -DFUSE_USE_VERSION=$with_fuse_version"
 
+PACKAGE_CFLAGS="$CPPFLAGS $PACKAGE_CFLAGS"
+
 AC_MSG_CHECKING([whether to use boost tr1 implementation])
 AC_ARG_WITH(boost-tr1,
-	AC_HELP_STRING(
-		[--with-boost-tr1],
-		[specify the path to boost if you want to use boost tr1 implementation [default=no]]
-		),
+	AS_HELP_STRING([--with-boost-tr1],[specify the path to boost if you want to use boost tr1 implementation [default=no]
+		]),
 	[],
 	[with_boost_tr1="no"]
 )
@@ -89,11 +76,13 @@ AC_TYPE_SIZE_T
 AC_FUNC_STAT
 AC_CHECK_FUNCS([memset])
 
+PKG_INSTALLDIR
 AX_CREATE_PKGCONFIG_INFO
 
 # Config files to create after running configure
 AC_CONFIG_FILES([Makefile
 		include/Makefile
+		include/fusekit/Makefile
 		example/Makefile])
 
 AC_OUTPUT

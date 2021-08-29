@@ -18,7 +18,7 @@ namespace fusekit{
 
     int access( int permissions ){
       if( permissions & (~_current) )
-	return -EACCES;
+        return -EACCES;
       return 0;
     }
   
@@ -62,6 +62,13 @@ namespace fusekit{
     >
   struct default_directory_permissions 
     : public default_permissions< 0755, Derived >{
+  };
+
+  template<
+    class Derived
+    >
+  struct default_symlink_permissions 
+    : public default_permissions< 0777, Derived >{
   };
 }
 

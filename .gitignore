@@ -1,0 +1,23 @@
+#Automake
+/*.m4
+*.cache
+config/
+config.*
+configure
+Makefile
+*.in
+stamp*
+.deps
+/*.pc
+/*.sh
+autoreconf.*
+#Temporary files
+.debhelper
+libfusekit-dev*
+debhelper*
+files
+#VScode
+settings.json
+#Examples
+*fs
+*.o

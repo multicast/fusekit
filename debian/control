@@ -1,16 +1,13 @@
 Source: libfusekit
-Priority: extra
+Section: contrib/libs
+Priority: optional
 Maintainer: Gerhard Lipp <gerhard_lipp@gmx.de>
-Build-Depends: debhelper (>= 7), autotools-dev, libfuse-dev
-Standards-Version: 3.8.1
-Section: libs
-Homepage: homeip.astade.net
+Build-Depends: debhelper (>= 10), autotools-dev, libfuse-dev
+Standards-Version: 4.1.2
+Homepage: https://github.com/multicast/fusekit
 
 Package: libfusekit-dev
-Section: libdevel
-Architecture: any
-Depends: 
-Description: a c++ wrapper for fuse 
-
-
-
+Section: contribs/libdevel
+Architecture: all
+Multi-Arch: foreign
+Description: a c++ wrapper for fuse

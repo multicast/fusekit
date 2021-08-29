@@ -1,6 +1,6 @@
 
-#ifndef __FUSEKIT__FILE_NODE_H
-#define __FUSEKIT__FILE_NODE_H
+#ifndef __FUSEKIT__SYMLINK_NODE_H
+#define __FUSEKIT__SYMLINK_NODE_H
 
 #include <fusekit/entry.h>
 
@@ -9,11 +9,11 @@ namespace fusekit{
   template<
     class Derived
     >
-  struct file_node {
+  struct symlink_node {
 
-    static const int type_flag = S_IFREG;
+    static const int type_flag = S_IFLNK;
 
-    typedef file_node node;
+    typedef symlink_node node;
 
     entry* find( const char* ){
       return 0;

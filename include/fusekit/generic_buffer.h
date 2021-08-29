@@ -114,6 +114,10 @@ namespace fusekit{
       return offset;
     }    
 
+    int readlink( char*, size_t ){
+      return -EINVAL;
+    }
+
   private:
     Reader _reader;
     Writer _writer;

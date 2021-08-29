@@ -17,19 +17,21 @@ namespace fusekit{
     template <class> class PermissionPolicy,
     template <class> class BufferPolicy,
     template <class> class NodePolicy,
+    template <class> class AttributesPolicy,
     int TypeFlag
     >
   struct basic_entry 
     : public entry
-    , public TimePolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >
-    , public PermissionPolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >
-    , public BufferPolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >
-    , public NodePolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >{
+    , public TimePolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >
+    , public PermissionPolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >
+    , public BufferPolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >
+    , public NodePolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >
+    , public AttributesPolicy< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >{
 
     template< template <class> class Base >
     inline 
-    Base< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >& base() {
-      return static_cast< Base< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, TypeFlag > >& >(*this);
+    Base< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >& base() {
+      return static_cast< Base< basic_entry< TimePolicy, PermissionPolicy, BufferPolicy, NodePolicy, AttributesPolicy, TypeFlag > >& >(*this);
     }
 
     virtual entry* child( const char* name ){
@@ -40,9 +42,9 @@ namespace fusekit{
       stbuf.st_mode = TypeFlag | base< PermissionPolicy >().mode();
       stbuf.st_nlink = base< NodePolicy >().links();
       stbuf.st_size = base< BufferPolicy >().size();
-      stbuf.st_ctime = base< TimePolicy >().change_time();
-      stbuf.st_atime = base< TimePolicy >().access_time();
-      stbuf.st_mtime = base< TimePolicy >().modification_time();
+      stbuf.st_ctim = base< TimePolicy >().change_time();
+      stbuf.st_atim = base< TimePolicy >().access_time();
+      stbuf.st_mtim = base< TimePolicy >().modification_time();
       return 0;
     }
 
@@ -70,11 +72,19 @@ namespace fusekit{
       return base< BufferPolicy >().write( buf, size, offset, fi );
     }
 
-    virtual int readdir( void *buf, fuse_fill_dir_t filler, off_t offset, fuse_file_info& fi){
+    virtual int opendir( fuse_file_info& fi ){
+      return base< NodePolicy >().opendir( fi );
+    }
+
+    virtual int readdir( void *buf, fuse_fill_dir_t filler, off_t offset, fuse_file_info& fi ){
       return base< NodePolicy >().readdir( buf, filler, offset, fi );
     }
 
-    virtual int mknod( const char* name, mode_t mode, dev_t type){
+    virtual int releasedir( fuse_file_info& fi ){
+      return base< NodePolicy >().releasedir( fi );
+    }
+
+    virtual int mknod( const char* name, mode_t mode, dev_t type ){
       return base< NodePolicy >().mknod( name, mode, type );
     }
 
@@ -98,9 +108,34 @@ namespace fusekit{
       return base< BufferPolicy >().truncate( off );
     }
 
-    virtual int utime( utimbuf& ){
+    virtual int utimens( const timespec[2] ){
+      // TODO: Changes to using the arguments
       base< TimePolicy >().update( fusekit::access_time | fusekit::modification_time );
       return 0;
+    }
+
+    virtual int readlink( char *buf, size_t bufsize ){
+      return base< BufferPolicy >().readlink(buf, bufsize);
+    }
+
+    virtual int symlink( const char *name, const char *target ){
+      return base< NodePolicy >().symlink(name, target);
+    }
+
+    virtual int setxattr( const char *name, const char *value, size_t size, int flags ){
+      return base< AttributesPolicy >().setxattr(name, value, size, flags);
+    }
+
+    virtual int getxattr( const char *name, char *value, size_t size ){
+      return base< AttributesPolicy >().getxattr(name, value, size);
+    }
+
+    virtual int listxattr( char *list, size_t size ){
+      return base< AttributesPolicy >().listxattr(list, size);
+    }
+
+    virtual int removexattr( const char *name ){
+      return base< AttributesPolicy >().removexattr(name);
     }
   };
 }
